@@ -25,9 +25,7 @@ def extract_json(source: str):
         raise Exception('No valid JSON found')
 
     # no special logic needed, should be the last match
-    # if something changes then these can be useful
-    # <script id="landingPage-json-data" type="application/json">
-    # <script id="webpack-bundle-page-data" type="application/json">
+    # if not, landingPage-json-data webpack-bundle-page-data might be useful
     result = match[len(match) - 1]
     return json.loads(result)
 
