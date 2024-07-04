@@ -3,20 +3,23 @@ import json
 import requests
 
 
-def scrape(url: str) -> str:
-    request = requests.get(url)
-    if request.status_code != 200:
-        raise Exception(
-            "GET request failed, "
-            f"HTTP status code: {request.status_code}, "
-            f"URL: {url}"
-        )
+def get_html(function):
+    def wrapper(url: str) -> str:
+        request = requests.get(url)
+        if request.status_code != 200:
+            raise Exception(
+                "GET request failed, "
+                f"HTTP status code: {request.status_code}, "
+                f"URL: {url}"
+            )
 
-    return request.text
+        return function(request.text)
+    return wrapper
 
 
-def extract_json(html: str):
-    match = re.findall(r'{.*}', html)
+@get_html
+def extract_json(source: str):
+    match = re.findall(r'{.*}', source)
 
     if match is None:
         raise Exception('No valid JSON found')
@@ -33,8 +36,7 @@ def main():
     BASE_URL = "https://www.humblebundle.com/"
     BUNDLES_URL = BASE_URL + 'bundles'
 
-    raw_html = scrape(BUNDLES_URL)
-    print(extract_json(raw_html))
+    print(extract_json(BUNDLES_URL))
 
 
 if __name__ == "__main__":
