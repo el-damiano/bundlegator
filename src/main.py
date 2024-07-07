@@ -4,7 +4,11 @@ import requests
 
 
 def get_html(function):
-    def wrapper(url: str) -> str:
+    def wrapper(url: str) -> dict:
+        if url.startswith("file://"):
+            with open(url[7:]) as file:
+                return function(file.read())
+
         request = requests.get(url)
         if request.status_code != 200:
             raise Exception(
