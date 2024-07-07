@@ -49,10 +49,11 @@ def get_bundles(source: str):
 
 
 def main():
-    BASE_URL = "https://www.humblebundle.com/"
-    BUNDLES_URL = BASE_URL + 'bundles'
+    BASE_URL = "https://www.humblebundle.com"
+    BUNDLES_URL = BASE_URL + '/bundles'
+    HTML_PATH = 'file://__pycache__/bundles.html'
 
-    bundles = get_bundles(BUNDLES_URL)
+    bundles = get_bundles(HTML_PATH)
     if bundles is None:
         exit()
 
