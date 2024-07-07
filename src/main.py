@@ -4,20 +4,21 @@ import requests
 
 
 def get_html(function):
-    def wrapper(url: str) -> dict:
-        if url.startswith("file://"):
-            with open(url[7:]) as file:
+    def wrapper(source: str) -> dict:
+        if source.startswith("file://"):
+            with open(source[7:]) as file:
                 return function(file.read())
+        if source.startswith("https://"):
+            request = requests.get(source)
+            if request.status_code != 200:
+                raise Exception(
+                    "GET request failed, "
+                    f"HTTP status code: {request.status_code}, "
+                    f"URL: {source}"
+                )
 
-        request = requests.get(url)
-        if request.status_code != 200:
-            raise Exception(
-                "GET request failed, "
-                f"HTTP status code: {request.status_code}, "
-                f"URL: {url}"
-            )
-
-        return function(request.text)
+            return function(request.text)
+        return function(source)
     return wrapper
 
 
@@ -52,6 +53,19 @@ def main():
     BASE_URL = "https://www.humblebundle.com"
     BUNDLES_URL = BASE_URL + '/bundles'
     HTML_PATH = 'file://__pycache__/bundles.html'
+    HTML_TEXT = """
+<!doctype html>
+<html lang="en" class="">
+  <head>
+    <title>Test Source</title>
+</head>
+  <body>
+<script type="application/json">
+  {"data": {"category": {"mosaic": [{"products": [{"product_url": "/baby"},{"product_url": "/bobo"}]}]}}}
+</script>
+  </body>
+</html>
+    """
 
     bundles = map(
         lambda url: BASE_URL + url,
