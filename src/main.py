@@ -18,7 +18,7 @@ def get_html(function):
 
 
 @get_html
-def extract_json(source: str):
+def extract_json(source: str) -> dict:
     match = re.findall(r'{.*}', source)
 
     if match is None:
@@ -30,11 +30,29 @@ def extract_json(source: str):
     return json.loads(result)
 
 
+def get_bundles(source: str):
+    element = extract_json(source)
+    try:
+        bundles = []
+        for category in element['data'].items():
+            elements = list(category[1]['mosaic'][0]['products'])
+            for element in elements:
+                bundles.append(element['product_url'])
+        return bundles
+
+    except KeyError:
+        exit()
+
+
 def main():
     BASE_URL = "https://www.humblebundle.com/"
     BUNDLES_URL = BASE_URL + 'bundles'
 
-    print(extract_json(BUNDLES_URL))
+    bundles = get_bundles(BUNDLES_URL)
+    if bundles is None:
+        exit()
+
+    print('\n'.join(bundles))
 
 
 if __name__ == "__main__":
