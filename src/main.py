@@ -34,7 +34,7 @@ def extract_json(source: str) -> dict:
     return json.loads(result)
 
 
-def get_bundles(source: str):
+def get_bundle_urls(source: str):
     element = extract_json(source)
     try:
         bundles = []
@@ -53,7 +53,11 @@ def main():
     BUNDLES_URL = BASE_URL + '/bundles'
     HTML_PATH = 'file://__pycache__/bundles.html'
 
-    bundles = get_bundles(HTML_PATH)
+    bundles = map(
+        lambda url: BASE_URL + url,
+        get_bundle_urls(HTML_PATH)
+    )
+
     if bundles is None:
         exit()
 
