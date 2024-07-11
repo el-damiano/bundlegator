@@ -18,16 +18,10 @@ def get_html(function):
             with open(source[7:]) as file:
                 return function(file.read())
 
-        url = ""
-        match source:
-            case Source.HUMBLE_BUNDLE:
-                url = source + '/bundles'
-            case Source.FANATICAL:
-                url = source + '/en/bundle'
-            case _:
-                return function(source)
+        if not source.startswith("https://"):
+            return function(source)
 
-        request = requests.get(url)
+        request = requests.get(source, headers={'User-Agent': 'Googlebot/2.1'})
         if request.status_code != 200:
             raise Exception(
                 "GET request failed, "
@@ -41,6 +35,11 @@ def get_html(function):
 
 @get_html
 def extract_json(source: str) -> dict:
+    try:
+        return json.loads(source)
+    except ValueError:
+        pass
+
     match = re.findall(r'{.*}', source)
 
     if match is None:
@@ -53,28 +52,34 @@ def extract_json(source: str) -> dict:
 
 
 def get_bundle_urls(source: str):
-    element = extract_json(source)
+    url = source
+    if url is Source.HUMBLE_BUNDLE:
+        url += '/bundles'
+    elif url is Source.FANATICAL:
+        url += '/api/algolia/bundles?altRank=false'
+    element = extract_json(url)
+
     try:
         bundles = []
         for category in element['data'].items():
             elements = list(category[1]['mosaic'][0]['products'])
             for element in elements:
                 bundles.append(element['product_url'])
-        return bundles
+        return list(map(
+            lambda past: source + past,
+            bundles
+        ))
 
-    except KeyError:
+    except (KeyError, TypeError):
         exit()
 
 
 def main():
-    BASE_URL = "https://www.humblebundle.com"
-    bundle_urls = map(
-        lambda url: BASE_URL + url,
-        get_bundle_urls(Source.HUMBLE_BUNDLE)
-    )
+    bundle_urls = get_bundle_urls(Source.HUMBLE_BUNDLE)
 
-    if bundle_urls is None:
-        exit()
+    bundles_by_source = {'HumbleBundle': bundle_urls}
+    for _, v in bundles_by_source.items():
+        print(v)
 
     print('\n'.join(bundle_urls))
 
