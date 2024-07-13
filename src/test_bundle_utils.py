@@ -1,13 +1,13 @@
 import unittest
 from bundle_utils import (
     Source,
-    get_html,
     extract_json,
     get_bundle_urls
 )
 
 
 class TestBundleUtils(unittest.TestCase):
+
     def test_extract_json(self):
         text_empty = ""
         text_without_json = "69420"  # this will be a valid json, but honestly idc since it'll fail to extract any useful info
@@ -39,6 +39,25 @@ class TestBundleUtils(unittest.TestCase):
         self.assertEqual(expected_json, extract_json(text_html))
         self.assertEqual(expected_json, extract_json(text_json))
         self.assertNotEqual(expected_json, extract_json(text_without_json))
+
+    def test_get_bundle_urls(self):
+        """
+        Weak test against connectivity to ``Source``
+        Validates if any data was received.
+        Will fail if Sources are unreachable. It's fine :)
+        """
+        bundles = list()
+
+        bundles += get_bundle_urls(Source.HUMBLE_BUNDLE)
+        self.assertGreater(len(bundles), 0)
+        length = len(bundles)
+
+        bundles += get_bundle_urls(Source.FANATICAL)
+        self.assertGreater(len(bundles), length)
+        length = len(bundles)
+
+        bundles += get_bundle_urls("")
+        self.assertEqual(len(bundles), length)
 
 
 if __name__ == "__main__":
