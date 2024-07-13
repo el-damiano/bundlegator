@@ -35,6 +35,12 @@ def get_html(function):
 
 @get_html
 def extract_json(source: str) -> dict:
+    """
+    Extract a JSON document from ``str`` to a Python ``dict``.
+
+    Validates if the JSON is valid, without checking if ``str`` contains it.
+    Only supports HumbleBundle and Fanatical.
+    """
     try:
         return json.loads(source)
     except ValueError:
@@ -43,7 +49,7 @@ def extract_json(source: str) -> dict:
     match = re.findall(r'{.*}', source)
 
     if match is None:
-        raise Exception('No valid JSON found')
+        raise TypeError('No valid JSON found')
 
     # no special logic needed, should be the last match
     # if not, landingPage-json-data webpack-bundle-page-data might be useful
