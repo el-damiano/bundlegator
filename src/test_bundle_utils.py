@@ -42,9 +42,7 @@ class TestBundleUtils(unittest.TestCase):
 
     def test_get_bundle_urls(self):
         """
-        Weak test against connectivity to ``Source``
-        Validates if any data was received.
-        Will fail if Sources are unreachable. It's fine :)
+        Weakly test the connection to ``Source`` and validate data retrieval. Will fail if any ``Source`` is unreachable. It's fine :)
         """
         bundles = list()
 

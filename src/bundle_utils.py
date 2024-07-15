@@ -4,6 +4,7 @@ import requests
 from enum import Enum
 
 
+# consider refactoring `bundle_utils` and `Source` enum when more sources will be supported
 class Source(str, Enum):
     HUMBLE_BUNDLE = "https://www.humblebundle.com"
     FANATICAL = "https://www.fanatical.com"
@@ -13,20 +14,20 @@ class Source(str, Enum):
 
 
 def get_html(function):
-    def wrapper(source: str) -> dict:
-        if source.startswith("file://"):
-            with open(source[7:]) as file:
+    def wrapper(source_location: str) -> dict:
+        if source_location.startswith("file://"):
+            with open(source_location[7:]) as file:
                 return function(file.read())
 
-        if not source.startswith("https://"):
-            return function(source)
+        if not source_location.startswith("https://"):
+            return function(source_location)
 
-        request = requests.get(source, headers={'User-Agent': 'Googlebot/2.1'})
+        request = requests.get(source_location, headers={'User-Agent': 'Googlebot/2.1'})
         if request.status_code != 200:
             raise Exception(
                 "GET request failed, "
                 f"HTTP status code: {request.status_code}, "
-                f"URL: {source}"
+                f"URL: {source_location}"
             )
 
         return function(request.text)
@@ -34,7 +35,7 @@ def get_html(function):
 
 
 @get_html
-def extract_json(source: str) -> dict:
+def extract_json(source_document: str) -> dict:
     """
     Extract a JSON document from ``str`` to a Python ``dict``.
 
@@ -42,11 +43,11 @@ def extract_json(source: str) -> dict:
     Only supports HumbleBundle and Fanatical.
     """
     try:
-        return json.loads(source)
+        return json.loads(source_document)
     except ValueError:
         pass
 
-    match = re.findall(r'{.*}', source)
+    match = re.findall(r'{.*}', source_document)
 
     if match is None:
         raise TypeError('No valid JSON found')
