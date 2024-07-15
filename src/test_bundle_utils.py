@@ -2,7 +2,7 @@ import unittest
 from bundle_utils import (
     Source,
     extract_json,
-    get_bundle_urls
+    get_bundles
 )
 
 
@@ -40,21 +40,21 @@ class TestBundleUtils(unittest.TestCase):
         self.assertEqual(expected_json, extract_json(text_json))
         self.assertNotEqual(expected_json, extract_json(text_without_json))
 
-    def test_get_bundle_urls(self):
+    def test_get_bundle(self):
         """
         Weakly test the connection to ``Source`` and validate data retrieval. Will fail if any ``Source`` is unreachable. It's fine :)
         """
         bundles = list()
 
-        bundles += get_bundle_urls(Source.HUMBLE_BUNDLE)
+        bundles += get_bundles(Source.HUMBLE_BUNDLE)
         self.assertGreater(len(bundles), 0)
         length = len(bundles)
 
-        bundles += get_bundle_urls(Source.FANATICAL)
+        bundles += get_bundles(Source.FANATICAL)
         self.assertGreater(len(bundles), length)
         length = len(bundles)
 
-        bundles += get_bundle_urls("")
+        bundles += get_bundles("")
         self.assertEqual(len(bundles), length)
 
 

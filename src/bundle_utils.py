@@ -58,7 +58,7 @@ def extract_json(source_document: str) -> dict:
     return json.loads(result)
 
 
-def get_bundle_urls(source: str) -> list:
+def get_bundles(source: str) -> list[dict] | dict:
     url = source
     try:
         if url is Source.HUMBLE_BUNDLE:
@@ -69,25 +69,16 @@ def get_bundle_urls(source: str) -> list:
             for category in element['data'].items():
                 elements = list(category[1]['mosaic'][0]['products'])
                 for element in elements:
-                    bundles.append(element['product_url'])
-            return list(map(
-                lambda suffix: source + suffix,
-                bundles
-            ))
+                    bundles.append(extract_json(source + element['product_url']))
+
+            return bundles
 
         elif url is Source.FANATICAL:
             url += '/api/algolia/bundles?altRank=false'
-            element = extract_json(url)
-
-            bundles = []
-            for bundle in element:
-                bundles.append(bundle['type'] + "/" + bundle['slug'])
-            return list(map(
-                lambda suffix: source + "/" + suffix,
-                bundles
-            ))
+            elements = extract_json(url)
+            return elements
 
     except (KeyError, TypeError):
-        exit()
+        pass
 
     return list()
