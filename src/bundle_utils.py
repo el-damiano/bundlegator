@@ -66,8 +66,9 @@ def get_bundles(source: str) -> list[dict] | dict:
             element = extract_json(url)
 
             bundles = []
-            for category in element['data'].items():
-                elements = list(category[1]['mosaic'][0]['products'])
+            # using unsafe subscripting to get an exception in case HumbleBundle changes their schema
+            for _, category in element['data'].items():
+                elements = list(category['mosaic'][0]['products'])
                 for element in elements:
                     bundles.append(extract_json(source + element['product_url']))
 
