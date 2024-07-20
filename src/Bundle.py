@@ -1,5 +1,7 @@
+import time
 import json
 import requests
+from requests.models import Response
 from datetime import datetime
 from bundle_utils import Source
 
@@ -102,13 +104,20 @@ class BundleItem:
                 author = author.split(',')[0]
                 request_url += f"inauthor:\"{author}\" "
 
-        request = requests.get(request_url, headers={'User-Agent': 'Googlebot/2.1'})
-        if request.status_code != 200:
-            raise Exception(
-                "GET request failed, "
-                f"HTTP status code: {request.status_code}, "
-                f"URL: {request_url}"
-            )
+        request = Response()
+        while (True):
+            request = requests.get(request_url, headers={'User-Agent': 'Googlebot/2.1'})
+            if request.status_code == 429:
+                print('too many requests, waiting for 10s')
+                time.sleep(10)
+                continue
+            elif request.status_code != 200:
+                raise Exception(
+                    "GET request failed, "
+                    f"HTTP status code: {request.status_code}, "
+                    f"URL: {request_url}"
+                )
+            break
 
         items = json.loads(request.text).get("items")
         if items is None:
