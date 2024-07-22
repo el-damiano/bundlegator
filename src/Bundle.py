@@ -12,28 +12,27 @@ class Bundle:
         if source is Source.HUMBLE_BUNDLE:
             bundle_data = document.get("bundleData", {})
             basic_data = bundle_data.get("basic_data", {})
-
             self.name = basic_data.get("human_name")
-            self.author = bundle_data.get("author")
+            self.authors = bundle_data.get("author")
             self.url = source + "/" + (bundle_data.get("page_url") or "bundles")
             self.start_date = document.get("at_time|datetime")
-            self.end_date = str(basic_data.get("end_time_datetime"))
-            self.total_price = [value for value in basic_data.get("msrp|money").values()]
+            self.end_date = basic_data.get("end_time_datetime")
+            self.total_price = [value for value in basic_data.get("msrp|money", {}).values()] or None
             self.items = self.get_humble_bundle_items(bundle_data.get("tier_item_data"))
 
         elif source is Source.FANATICAL:
             unix_time = document.get("release_date")
-            self.name = document.get("name") or "Unkown"
-            self.author = "Fanatical"
+            self.name = document.get("name")
+            self.authors = "Fanatical"
             self.url = source + "/" + (document.get("type") or "en") + "/" + (document.get("slug") or "bundle")
-            self.start_date = str(datetime.fromtimestamp(unix_time)) if unix_time else "Unkown"
-            self.end_date = "Unkown"
-            self.total_price = str(document.get("fullPrice", {}).get("EUR")) + " EUR"
+            self.start_date = str(datetime.fromtimestamp(unix_time)) if unix_time else None
+            self.end_date = None
+            self.total_price = (str(document.get("fullPrice", {}).get("EUR")) + " EUR") or None
             self.items = self.get_fanatical_bundle_items(document.get("bundle_covers"))
 
-    def get_humble_bundle_items(self, items: dict | None) -> dict | None:
+    def get_humble_bundle_items(self, items: dict | None) -> dict:
         if items is None:
-            return None
+            return {}
 
         items_by_tier = {}
         for _, value in items.items():
@@ -44,9 +43,9 @@ class Bundle:
 
         return items_by_tier
 
-    def get_fanatical_bundle_items(self, items: list | None) -> dict | None:
+    def get_fanatical_bundle_items(self, items: list | None) -> dict:
         if items is None:
-            return None
+            return {}
 
         # just to keep it unified with how it's done with HumbleBundle
         items_by_tier = {'fakeTier': list()}
@@ -61,8 +60,8 @@ class BundleItem:
         if source is Source.HUMBLE_BUNDLE:
             self.item_data = item_data
             self.name = item_data.get("human_name")
-            self.author = [dev.get("developer-name") for dev in item_data.get("developers", {})]
-            self.publisher = [pub.get("publisher-name") for pub in item_data.get("publishers", {})]
+            self.authors = [dev.get("developer-name") for dev in item_data.get("developers", {})] or None
+            self.publisher = [pub.get("publisher-name") for pub in item_data.get("publishers", {})] or None
             self.platforms = item_data.get("platforms_and_oses", {})
             self.isbn = None
             self.release_date = None
@@ -73,7 +72,7 @@ class BundleItem:
         elif source is Source.FANATICAL:
             self.item_data = item_data
             self.name = item_data.get("name")
-            self.author = None
+            self.authors = None
             self.publisher = None
             self.platforms = None
             self.isbn = None
@@ -89,27 +88,41 @@ class BundleItem:
         self.isbn = ""
         self.release_date = ""
 
-        GOOGLE_BOOKS_URL = "https://www.googleapis.com/books/v1/volumes?lr=lang_en&q="
+        GOOGLE_BOOKS_URL = "https://www.googleapis.com/books/v1/volumes?lr=langRestrict=en&q="
         request_url = GOOGLE_BOOKS_URL
 
         if self.name:
             request_url += f"intitle:\"{self.name}\""
-        if self.author:
-            for author in self.author:
-                # sometimes multiple authors are in a list
-                # but sometimes they're in one entry, with a comma as the separator
-                # but also some single authors have their names separated with a comma
-                # and these mess up the api request and the results are scuffed
-                # so just go with the first one if there's a comma, still better than nothing
-                author = author.split(',')[0]
-                request_url += f"inauthor:\"{author}\" "
+        if self.authors:
+            # authors = map(
+            #     lambda author: f"inauthor:\"{author.split(',')}\"",
+            #     self.authors.copy()
+            # )
+            # print(list(authors))
+            authors = self.authors.copy()
+            for author in authors:
+                if author is None:
+                    continue
+                # this is attrocious, but it avoids scuffed api results
+                # authors are not listed in an uniform fashion
+                # a single entry can mean
+                # - a single author
+                # - a single author, whose first and last name are comma-separated
+                # - a group of authors, comma-seperated
+                # this way there can also be more keywords than allowed, so cut em short
+                request_url += str("".join(list(
+                    map(
+                        lambda keyword: f"inauthor:\"{keyword}\"",
+                        author.split(',')
+                    )
+                )[:7]))
 
         request = Response()
-        while (True):
+        while True:
             request = requests.get(request_url, headers={'User-Agent': 'Googlebot/2.1'})
             if request.status_code == 429:
                 print('too many requests, waiting for 10s')
-                time.sleep(10)
+                time.sleep(5)
                 continue
             elif request.status_code != 200:
                 raise Exception(
