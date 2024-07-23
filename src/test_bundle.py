@@ -3,7 +3,7 @@ from Bundle import Bundle
 from bundle_utils import Source
 
 
-class TestBundleUtils(unittest.TestCase):
+class TestBundle(unittest.TestCase):
 
     HUMBLE_BUNDLE_GAMES = [
         {
@@ -231,18 +231,18 @@ class TestBundleUtils(unittest.TestCase):
         bundle_one_items = list(items.values())
         self.assertEqual(bundle_one_tiers, {0.1, "WE'RE RICH", 'Other'})
 
-        book_one = bundle_one_items[0][0]
-        self.assertEqual(book_one.name, 'Elden Ring')
-        self.assertEqual(book_one.authors, ['FromSoftware'])
-        self.assertEqual(book_one.publisher, ['BANDAI NAMCO'])
-        self.assertEqual(book_one.platforms, {'game': {'steam': ['windows']}})
-        self.assertFalse(book_one.isbn)
-        self.assertFalse(book_one.release_date)
+        game_one = bundle_one_items[0][0]
+        self.assertEqual(game_one.name, 'Elden Ring')
+        self.assertEqual(game_one.authors, ['FromSoftware'])
+        self.assertEqual(game_one.publisher, ['BANDAI NAMCO'])
+        self.assertEqual(game_one.platforms, {'game': {'steam': ['windows']}})
+        self.assertFalse(game_one.isbn)
+        self.assertFalse(game_one.release_date)
 
-        book_two = bundle_one_items[1][0]
-        self.assertEqual(book_two.name, 'Deep Rock Galactic')
-        self.assertEqual(book_two.authors, ['FOR ROCK AND STONE'])
-        self.assertEqual(book_two.publisher, None)
-        self.assertEqual(book_two.platforms, {'game': {'steam': ['windows']}})
-        self.assertFalse(book_two.isbn)
-        self.assertFalse(book_two.release_date)
+        game_two = bundle_one_items[1][0]
+        self.assertEqual(game_two.name, 'Deep Rock Galactic')
+        self.assertEqual(game_two.authors, ['FOR ROCK AND STONE'])
+        self.assertEqual(game_two.publisher, None)
+        self.assertEqual(game_two.platforms, {'game': {'steam': ['windows']}})
+        self.assertFalse(game_two.isbn)
+        self.assertFalse(game_two.release_date)
