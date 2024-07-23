@@ -1,9 +1,6 @@
 import unittest
-from bundle_utils import (
-    Source,
-    extract_json,
-    get_bundles
-)
+from Bundle import Source
+from bundle_utils import extract_json, get_bundles
 
 
 class TestBundleUtils(unittest.TestCase):
@@ -49,6 +46,9 @@ class TestBundleUtils(unittest.TestCase):
         bundles += get_bundles(Source.HUMBLE_BUNDLE)
         self.assertGreater(len(bundles), 0)
         length = len(bundles)
+
+        bundles += get_bundles(Source.HUMBLE_BUNDLE)
+        self.assertEqual(len(bundles), length)
 
         bundles += get_bundles(Source.FANATICAL)
         self.assertGreater(len(bundles), length)

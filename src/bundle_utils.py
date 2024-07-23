@@ -1,3 +1,4 @@
+import os
 import re
 import json
 import requests
@@ -60,17 +61,32 @@ def extract_json(source_document: str) -> dict:
 
 def get_bundles(source: str) -> list[dict] | dict:
     url = source
+    HUMBLE_BUNDLE_CACHE = os.environ['HUMBLE_BUNDLE_CACHE']
+
     try:
         if url is Source.HUMBLE_BUNDLE:
             url += '/bundles'
             element = extract_json(url)
 
+            # ideally I'd cache all relevant bundle info including the google api books results
+            # but for that I'd need to refactor a bunch of stuff
+            # cause instead of using a simple dict I went with stupid objects
+            cache_file = open(HUMBLE_BUNDLE_CACHE, 'r+')
+            cached_elements = cache_file.read().splitlines()
+            cache_file.truncate(0)
+            cache_file.seek(0)
+
             bundles = []
-            # using unsafe subscripting to get an exception in case HumbleBundle changes their schema
-            for _, category in element['data'].items():
-                elements = list(category['mosaic'][0]['products'])
+            for _, category in element.get('data', {}).items():
+                elements = category.get('mosaic', [{}])[0].get('products', [])
+
                 for element in elements:
-                    bundles.append(extract_json(source + element['product_url']))
+                    machine_name = element.get("machine_name")
+                    if machine_name not in cached_elements:
+                        bundles.append(extract_json(source + element['product_url']))
+                    cache_file.write(machine_name + "\n")
+
+            cache_file.close()
 
             return bundles
 
