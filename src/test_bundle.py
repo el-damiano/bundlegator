@@ -182,11 +182,9 @@ class TestBundle(unittest.TestCase):
         self.assertFalse(book_bundles[1].items)
 
         items = book_bundles[0].items
-        bundle_one_tiers = items.keys()
-        bundle_one_items = list(items.values())
-        self.assertEqual(bundle_one_tiers, {0.1, 0.2})
+        bundle_one_items = items
 
-        book_one = bundle_one_items[0][0]
+        book_one = bundle_one_items[0]
         self.assertEqual(book_one.name, 'Automate the Boring Stuff with Python, 2nd Edition')
         self.assertEqual(book_one.authors, ['El Seigart', None, None])
         self.assertEqual(book_one.publisher, ['NoStarch'])
@@ -194,7 +192,7 @@ class TestBundle(unittest.TestCase):
         self.assertTrue(book_one.isbn)
         self.assertTrue(book_one.release_date)
 
-        book_two = bundle_one_items[1][0]
+        book_two = bundle_one_items[1]
         self.assertEqual(book_two.name, 'Introduction to Algorithms, 4th Edition')
         self.assertEqual(book_two.authors, ['Thomas,H.,Cormen, Charles,E.,Leiserson, Ronald L. Rivest, Clifford Stein', None, None])
         self.assertEqual(book_two.publisher, ['The MIT Press'])
@@ -227,11 +225,9 @@ class TestBundle(unittest.TestCase):
         self.assertFalse(game_bundles[1].items)
 
         items = game_bundles[0].items
-        bundle_one_tiers = items.keys()
-        bundle_one_items = list(items.values())
-        self.assertEqual(bundle_one_tiers, {0.1, "WE'RE RICH", 'Other'})
+        bundle_one_items = items
 
-        game_one = bundle_one_items[0][0]
+        game_one = bundle_one_items[0]
         self.assertEqual(game_one.name, 'Elden Ring')
         self.assertEqual(game_one.authors, ['FromSoftware'])
         self.assertEqual(game_one.publisher, ['BANDAI NAMCO'])
@@ -239,7 +235,7 @@ class TestBundle(unittest.TestCase):
         self.assertFalse(game_one.isbn)
         self.assertFalse(game_one.release_date)
 
-        game_two = bundle_one_items[1][0]
+        game_two = bundle_one_items[1]
         self.assertEqual(game_two.name, 'Deep Rock Galactic')
         self.assertEqual(game_two.authors, ['FOR ROCK AND STONE'])
         self.assertEqual(game_two.publisher, None)
