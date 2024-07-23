@@ -61,7 +61,8 @@ def extract_json(source_document: str) -> dict:
 
 def get_bundles(source: str) -> list[dict] | dict:
     url = source
-    HUMBLE_BUNDLE_CACHE = os.environ['HUMBLE_BUNDLE_CACHE']
+    # hardcode due to quick deprecation of main.sh
+    HUMBLE_BUNDLE_CACHE = os.path.expanduser('~') + "/.cache/humble_bundle"
 
     try:
         if url is Source.HUMBLE_BUNDLE:
