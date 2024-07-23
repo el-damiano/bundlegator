@@ -30,28 +30,25 @@ class Bundle:
             self.total_price = (str(document.get("fullPrice", {}).get("EUR")) + " EUR") or None
             self.items = self.get_fanatical_bundle_items(document.get("bundle_covers"))
 
-    def get_humble_bundle_items(self, items: dict | None) -> dict:
-        if items is None:
-            return {}
+    def get_humble_bundle_items(self, tier_item_data: dict | None) -> list:
+        if tier_item_data is None:
+            return []
 
-        items_by_tier = {}
-        for _, value in items.items():
-            tier = value.get("min_price|money", {}).get("amount") or "Other"
-            if tier not in items_by_tier:
-                items_by_tier[tier] = list()
-            items_by_tier[tier].append(BundleItem(Source.HUMBLE_BUNDLE, value))
+        items = []
+        for _, value in tier_item_data.items():
+            items.append(BundleItem(Source.HUMBLE_BUNDLE, value))
 
-        return items_by_tier
+        return items
 
-    def get_fanatical_bundle_items(self, items: list | None) -> dict:
-        if items is None:
-            return {}
+    def get_fanatical_bundle_items(self, item_data: list | None) -> list:
+        if item_data is None:
+            return []
 
         # just to keep it unified with how it's done with HumbleBundle
-        items_by_tier = {'fakeTier': list()}
-        for item in items:
-            items_by_tier['fakeTier'].append(BundleItem(Source.FANATICAL, item))
-        return items_by_tier
+        items = []
+        for item in item_data:
+            items.append(BundleItem(Source.FANATICAL, item))
+        return items
 
 
 class BundleItem:
@@ -81,6 +78,13 @@ class BundleItem:
             # deprecated for now due to lack of caching functionality to avoid unnecessary requests
             # if item_data.get("type") == "book":
             #     self.fill_in_book_data()
+
+    def __repr__(self) -> str:
+        # LMAOOOO cutting a corner really bad here, but it's not important so who cares
+        return f"""{self.name or ""}<br>
+        {self.authors or ""}<br>
+        {self.isbn}<br>
+        {self.release_date}<br>"""
 
     def fill_in_book_data(self) -> None:
         """
