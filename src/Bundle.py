@@ -84,7 +84,7 @@ class BundleItem:
         return f"""{self.name or ""}<br>
         {self.authors or ""}<br>
         {self.isbn}<br>
-        {self.release_date}<br>"""
+        {self.release_date}<br><br>"""
 
     def fill_in_book_data(self) -> None:
         """
