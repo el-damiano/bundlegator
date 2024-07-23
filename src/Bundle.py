@@ -78,8 +78,9 @@ class BundleItem:
             self.isbn = None
             self.release_date = None
 
-            if item_data.get("type") == "book":
-                self.fill_in_book_data()
+            # deprecated for now due to lack of caching functionality to avoid unnecessary requests
+            # if item_data.get("type") == "book":
+            #     self.fill_in_book_data()
 
     def fill_in_book_data(self) -> None:
         """
