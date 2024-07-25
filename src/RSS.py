@@ -47,21 +47,3 @@ class ChannelItem:
     ]]></description>
 </item>
         """
-
-
-class ChannelDescription:
-
-    def __init__(self, item: BundleItem) -> None:
-        self.name = item.name
-        self.authors = item.authors
-        self.publisher = item.publisher
-        self.platforms = item.platforms
-        self.isbn = item.isbn
-        self.release_date = item.release_date
-
-    def __repr__(self) -> str:
-        return f"""
-            {self.name}
-            {self.authors}
-
-"""
