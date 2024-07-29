@@ -97,6 +97,6 @@ def get_bundles(source: str) -> list[dict] | dict:
             return elements
 
     except (KeyError, TypeError):
-        pass
+        raise KeyError("JSON document doesn't conform to schema")
 
     return list()
