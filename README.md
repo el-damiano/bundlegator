@@ -1,3 +1,6 @@
+Bundlegator
+===========
+
 Bundlegator is a web scraper and RSS feed generator. It's only meant to output
 a valid RSS feed and doesn't come with reading functionality. For that I
 recommend a terminal RSS reader [Newsboat](https://github.com/newsboat/newsboat).
