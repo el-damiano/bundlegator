@@ -22,7 +22,13 @@ your favorite RSS reader and enjoy all the important information in a neat forma
 > or [Thunderbird](https://www.thunderbird.net/).
 
 Running the binary will output the RSS feed to `stdout` which is perfect for
-`Newsboat`. I haven't tried it for any other RSS reader, but for the ones that
+`Newsboat`. As per version 2.40, simply add this to your `~/.config/newsboat/urls` file:
+
+```bash
+"exec:~/path-to-binaries/bundlegator"
+```
+
+I haven't tried it for any other RSS reader, but for the ones that
 don't support `stdin/stdout` I'd probably redirect the output to a file and
 then set the RSS reader to read from that path.
 
