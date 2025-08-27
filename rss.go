@@ -73,10 +73,6 @@ func description(bundle Bundle) string {
 		<th>ISBN</th>
 		<th>{{.ISBN}}</th>
 	</tr>
-	<tr>
-		<th>Release Year</th>
-		<th>{{.ISBN}}</th>
-	</tr>
 </table>`)
 	if err != nil {
 		return fmt.Sprintf("Error creating template %v", err)
