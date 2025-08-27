@@ -1,15 +1,65 @@
-Bundlegator
-===========
+# Bundlegator
 
-Bundlegator is a web scraper and RSS feed generator. It's only meant to output
-a valid RSS feed and doesn't come with reading functionality. For that I
-recommend a terminal RSS reader [Newsboat](https://github.com/newsboat/newsboat).
+With just one command generate an RSS feed of all the new bundle deals offered by
+[HumbleBundle](https://www.humblebundle.com/) and [Fanatical](https://www.fanatical.com/)
+without needing to open a browser! Instead, simply redirect the contents to
+your favorite RSS reader and enjoy all the important information in a neat format.
 
-I created it for HumbleBundle and Fanatical to get more information about the
-books in their bundles, such as ISBNs and release dates. Gaming and software
-bundles are supported as well.
+- [Requirements](#requirements)
+- [Usage](#usage)
+- [Install](#install)
+- [Uninstall](#uninstall)
 
-I kept `requirements.txt` minimal as I valued portability and since I finished
-the [OOP](https://www.boot.dev/courses/learn-object-oriented-programming) and
-[FP](https://www.boot.dev/courses/learn-functional-programming) courses on
-[Boot.dev](https://www.boot.dev), I wanted to put my skills to the test.
+# Requirements
+
+- go (1.24.5+)
+
+# Usage
+
+> [!IMPORTANT]
+> Bundlegator is only meant to output an RSS feed and doesn't come with browsing functionality.
+> For that I recommend the terminal RSS reader [Newsboat](https://github.com/newsboat/newsboat)
+> or [Thunderbird](https://www.thunderbird.net/).
+
+Running the binary will output the RSS feed to `stdout` which is perfect for
+`Newsboat`. I haven't tried it for any other RSS reader, but for the ones that
+don't support `stdin/stdout` I'd probably redirect the output to a file and
+then set the RSS reader to read from that path.
+
+```bash
+bundlegator > file.rss
+```
+
+# Install
+
+1. Ensure `$GOPATH` is setup correctly, and add it to your `$PATH` in your
+`.bashrc` / `.zshrc` like so:
+
+```bash
+export GOPATH=$(go env GOPATH)
+export GOBIN=$GOPATH/bin
+export PATH=$PATH:$GOBIN
+```
+
+2. Install it by running:
+
+```bash
+go install github.com/el-damiano/bundlegator@latest
+```
+
+Or alternatively:
+
+```bash
+git clone https://github.com/el-damiano/bundlegator.git &&
+cd bundlegator &&
+go install .
+```
+
+# Uninstall
+
+Either remove the file under `$GOBIN/bundlegator`, or go to where you have
+cloned the repo and run:
+
+```bash
+go clean -i -cache -modcache
+```
