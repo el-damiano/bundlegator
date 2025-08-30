@@ -242,8 +242,6 @@ func bundlesGet(sources []Source, blacklist map[string]struct{}) map[string]Bund
 
 			for _, r := range Resp {
 				bundleURL := fmt.Sprintf("%s/en/%s/%s", source.BaseURL, r.Type, r.Slug)
-				bundleItems := make([]BundleItem, len(r.BundleCovers))
-
 				_, ok := blacklist[bundleURL]
 				if ok {
 					continue
@@ -270,10 +268,10 @@ func bundlesGet(sources []Source, blacklist map[string]struct{}) map[string]Bund
 					continue
 				}
 
+				var bundleItems []BundleItem
 				blacklist[bundleURL] = struct{}{}
 
 				price := 0.0 // price logic will differ between normal and pick-and-mix bundles
-				count := 0
 				for _, bundle := range Resp.Bundles {
 					if bundle.Price.Eur > price {
 						price = bundle.Price.Eur
@@ -285,12 +283,12 @@ func bundlesGet(sources []Source, blacklist map[string]struct{}) map[string]Bund
 							publishers[i] = pub.Name
 						}
 
-						bundleItems[count] = BundleItem{
+						bundleItems = append(bundleItems, BundleItem{
 							Name:      game.Name,
 							Author:    strings.Join(game.Authors, ", "),
 							Publisher: strings.Join(publishers, ", "),
 							ISBN:      game.Isbn,
-						}
+						})
 					}
 				}
 
@@ -299,12 +297,11 @@ func bundlesGet(sources []Source, blacklist map[string]struct{}) map[string]Bund
 						price = product.Price.Eur
 					}
 
-					bundleItems[count] = BundleItem{
+					bundleItems = append(bundleItems, BundleItem{
 						Name:      product.Name,
 						Author:    strings.Join(product.Authors, ", "),
 						Publisher: strings.Join(product.Publishers, ", "),
-					}
-					count += 1
+					})
 				}
 
 				dateEnd := time.Unix(int64(r.AvailableValidUntil), 0)
