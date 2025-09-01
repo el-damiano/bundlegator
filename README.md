@@ -5,6 +5,9 @@ With just one command generate an RSS feed of all the new bundle deals offered b
 without needing to open a browser! Instead, simply redirect the contents to
 your favorite RSS reader and enjoy all the important information in a neat format.
 
+<img width="563" height="443" alt="Example RSS article displayed in Newsboat" src="https://github.com/user-attachments/assets/a376c125-4a27-47e3-b4df-b906fd4dc54b" />
+<br>
+
 - [Requirements](#requirements)
 - [Usage](#usage)
 - [Install](#install)
