@@ -301,6 +301,7 @@ func bundlesGet(sources []Source, blacklist map[string]struct{}) map[string]Bund
 						Name:      product.Name,
 						Author:    strings.Join(product.Authors, ", "),
 						Publisher: strings.Join(product.Publishers, ", "),
+						ISBN:      product.Isbn,
 					})
 				}
 

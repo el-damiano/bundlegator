@@ -81,6 +81,7 @@ type FanaticalBundleResp struct {
 			Eur float64 `json:"EUR"`
 		} `json:"price"`
 		Publishers []string `json:"publishers"`
+		Isbn       string   `json:"isbn"`
 	} `json:"products"`
 	Tiers []struct {
 		Quantity int `json:"quantity"`
